@@ -118,6 +118,14 @@
           </svg>
           Exportar HTML
         </button>
+        <button class="btn btn-icon" id="helpBtn" title="Ayuda">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
         <button class="btn btn-icon" id="settingsBtn" title="Configuración">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2">
@@ -212,6 +220,104 @@ function hello() {
       <div class="modal-footer">
         <button class="btn" id="cancelSettings">Cancelar</button>
         <button class="btn btn-primary" id="saveSettings">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal hidden">
+    <div class="modal-overlay" id="helpOverlay"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>❓ Ayuda - Mark Down Studio</h2>
+        <button class="modal-close" id="helpClose">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="help-section">
+          <h3>⌨️ Atajos de Teclado</h3>
+          <table class="help-table">
+            <tr>
+              <td><kbd>Cmd+N</kbd></td>
+              <td>Nuevo archivo</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+O</kbd></td>
+              <td>Abrir archivo</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+S</kbd></td>
+              <td>Guardar archivo</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+B</kbd></td>
+              <td>Negrita</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+I</kbd></td>
+              <td>Cursiva</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+K</kbd></td>
+              <td>Insertar enlace</td>
+            </tr>
+            <tr>
+              <td><kbd>Cmd+E</kbd></td>
+              <td>Código inline</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="help-section">
+          <h3>📁 Drag & Drop</h3>
+          <p>Arrastra archivos <code>.md</code>, <code>.markdown</code> o <code>.txt</code> desde el Finder directamente
+            al editor para abrirlos.</p>
+          <ol>
+            <li>Abre el Finder y busca tu archivo markdown</li>
+            <li>Arrastra el archivo sobre el área del editor (panel izquierdo)</li>
+            <li>Suelta el archivo - se abrirá automáticamente</li>
+          </ol>
+        </div>
+
+        <div class="help-section">
+          <h3>🛠️ Herramientas de Formato</h3>
+          <p>Usa los botones de la barra de herramientas para insertar elementos markdown:</p>
+          <ul>
+            <li><strong>H1, H2</strong>: Encabezados</li>
+            <li><strong>Lista</strong>: Lista con viñetas</li>
+            <li><strong>Cita</strong>: Bloque de cita</li>
+            <li><strong>Tabla</strong>: Plantilla de tabla 2x2</li>
+            <li><strong>HR</strong>: Línea horizontal separadora</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3>📊 Barra de Estado</h3>
+          <p>En la parte inferior del editor verás:</p>
+          <ul>
+            <li><strong>Palabras</strong>: Contador de palabras en tiempo real</li>
+            <li><strong>Caracteres</strong>: Total de caracteres</li>
+            <li><strong>Estado</strong>: "Guardado" (verde) o "Modificado" (naranja)</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3>💡 Consejos</h3>
+          <ul>
+            <li>El contenido se guarda automáticamente en tu navegador</li>
+            <li>Usa <strong>Exportar HTML</strong> para generar una página web</li>
+            <li>Alterna entre modo claro/oscuro con el botón de tema</li>
+            <li>La vista previa se actualiza en tiempo real mientras escribes</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="helpOk">Entendido</button>
       </div>
     </div>
   </div>

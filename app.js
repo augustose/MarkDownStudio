@@ -93,6 +93,12 @@ class MarkDownStudio {
     document.getElementById('cancelSettings').addEventListener('click', () => this.closeSettings());
     document.getElementById('saveSettings').addEventListener('click', () => this.saveSettingsData());
 
+    // Help
+    document.getElementById('helpBtn').addEventListener('click', () => this.openHelp());
+    document.getElementById('helpClose').addEventListener('click', () => this.closeHelp());
+    document.getElementById('helpOverlay').addEventListener('click', () => this.closeHelp());
+    document.getElementById('helpOk').addEventListener('click', () => this.closeHelp());
+
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
 
@@ -593,6 +599,20 @@ ${clean}
       }
       this.loadFile(files[0]);
     }
+  }
+
+  // ========================================
+  // Help Modal
+  // ========================================
+
+  openHelp() {
+    const modal = document.getElementById('helpModal');
+    modal.classList.remove('hidden');
+  }
+
+  closeHelp() {
+    const modal = document.getElementById('helpModal');
+    modal.classList.add('hidden');
   }
 }
 
