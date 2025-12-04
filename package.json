@@ -1,0 +1,23 @@
+{
+  "name": "markdown-studio",
+  "version": "0.1.0",
+  "description": "A beautiful markdown editor for macOS",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y http-server -p 3000 -o",
+    "start": "npx -y http-server -p 3000 -o"
+  },
+  "keywords": [
+    "markdown",
+    "editor",
+    "macos",
+    "preview"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "marked": "^11.1.1",
+    "highlight.js": "^11.9.0",
+    "dompurify": "^3.0.8"
+  }
+}
