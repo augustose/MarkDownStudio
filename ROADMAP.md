@@ -26,14 +26,22 @@ Este documento describe las funcionalidades planificadas para futuras versiones 
 ---
 
 ## 🎯 Fase 1: Mejoras de Edición (v0.2.0)
+### seccion de configuration
+- [ ] **Configuración Gemini token**: en la seccion de configuracion el usuario puede agregar un token gemini api key o como quiera que sea para las funciones que requieran inteligencia artificial
+
+### seccion TOOLS
+- [ ] **NUEVO BOTON**:  otros elelemtos markdown como citas, tablas, etc
 
 ### Editor Avanzado
+- [ ] **barra de estado** con informacion de la cantidad de caracteres, palabras, etc. archivo guardado/modificado pendiente. 
 - [ ] **Modo Focus**: Resalta solo el párrafo actual, oculta el resto
 - [ ] **Typewriter Mode**: Mantiene la línea actual centrada verticalmente
 - [ ] **Estadísticas en Vivo**: Contador de palabras, caracteres, tiempo de lectura
 - [ ] **Análisis de Legibilidad**: Nivel de complejidad del texto (Flesch-Kincaid)
 - [ ] **Corrector Ortográfico**: Multiidioma con sugerencias contextuales
 - [ ] **Autocompletado**: Sugerencias inteligentes mientras escribes
+- [ ] **Auto-guardado**: Guarda automáticamente el archivo cada cierto tiempo
+- [ ] **drag and drop**: recibe archivos de texto y los abre 
 
 ### Snippets y Plantillas
 - [ ] **Sistema de Snippets**: Atajos expandibles personalizables

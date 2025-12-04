@@ -8,7 +8,12 @@ class MarkDownStudio {
     this.preview = document.getElementById('preview');
     this.currentFile = null;
     this.hasUnsavedChanges = false;
-    
+
+    // Status bar elements
+    this.wordCountEl = document.getElementById('wordCount');
+    this.charCountEl = document.getElementById('charCount');
+    this.saveStatusEl = document.getElementById('saveStatus');
+
     this.init();
   }
 
@@ -17,16 +22,18 @@ class MarkDownStudio {
     this.setupEventListeners();
     this.loadFromLocalStorage();
     this.updatePreview();
+    this.updateStatusBar();
     this.applyTheme();
+    this.loadSettings();
   }
 
   // ========================================
   // Markdown Configuration
   // ========================================
-  
+
   setupMarked() {
     marked.setOptions({
-      highlight: function(code, lang) {
+      highlight: function (code, lang) {
         if (lang && hljs.getLanguage(lang)) {
           try {
             return hljs.highlight(code, { language: lang }).value;
@@ -44,12 +51,14 @@ class MarkDownStudio {
   // ========================================
   // Event Listeners
   // ========================================
-  
+
   setupEventListeners() {
     // Editor input
     this.editor.addEventListener('input', () => {
       this.updatePreview();
+      this.updateStatusBar();
       this.hasUnsavedChanges = true;
+      this.updateSaveStatus();
       this.autoSave();
     });
 
@@ -73,6 +82,16 @@ class MarkDownStudio {
     document.getElementById('h1Btn').addEventListener('click', () => this.insertHeading(1));
     document.getElementById('h2Btn').addEventListener('click', () => this.insertHeading(2));
     document.getElementById('listBtn').addEventListener('click', () => this.insertList());
+    document.getElementById('quoteBtn').addEventListener('click', () => this.insertQuote());
+    document.getElementById('tableBtn').addEventListener('click', () => this.insertTable());
+    document.getElementById('hrBtn').addEventListener('click', () => this.insertHR());
+
+    // Settings
+    document.getElementById('settingsBtn').addEventListener('click', () => this.openSettings());
+    document.getElementById('modalClose').addEventListener('click', () => this.closeSettings());
+    document.getElementById('modalOverlay').addEventListener('click', () => this.closeSettings());
+    document.getElementById('cancelSettings').addEventListener('click', () => this.closeSettings());
+    document.getElementById('saveSettings').addEventListener('click', () => this.saveSettingsData());
 
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
@@ -95,13 +114,13 @@ class MarkDownStudio {
   // ========================================
   // Preview Update
   // ========================================
-  
+
   updatePreview() {
     const markdown = this.editor.value;
     const html = marked.parse(markdown);
     const clean = DOMPurify.sanitize(html);
     this.preview.innerHTML = clean;
-    
+
     // Re-highlight code blocks
     this.preview.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightElement(block);
@@ -111,14 +130,14 @@ class MarkDownStudio {
   // ========================================
   // File Operations
   // ========================================
-  
+
   newFile() {
     if (this.hasUnsavedChanges) {
       if (!confirm('¿Descartar cambios no guardados?')) {
         return;
       }
     }
-    
+
     this.editor.value = '';
     this.currentFile = null;
     this.hasUnsavedChanges = false;
@@ -153,8 +172,9 @@ class MarkDownStudio {
     a.download = this.currentFile || 'documento.md';
     a.click();
     URL.revokeObjectURL(url);
-    
+
     this.hasUnsavedChanges = false;
+    this.updateSaveStatus();
     this.showNotification('Archivo guardado');
   }
 
@@ -162,7 +182,7 @@ class MarkDownStudio {
     const markdown = this.editor.value;
     const html = marked.parse(markdown);
     const clean = DOMPurify.sanitize(html);
-    
+
     const fullHTML = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -232,23 +252,23 @@ ${clean}
     a.download = (this.currentFile || 'documento').replace('.md', '') + '.html';
     a.click();
     URL.revokeObjectURL(url);
-    
+
     this.showNotification('HTML exportado');
   }
 
   // ========================================
   // Formatting Functions
   // ========================================
-  
+
   insertFormat(before, after) {
     const start = this.editor.selectionStart;
     const end = this.editor.selectionEnd;
     const text = this.editor.value;
     const selectedText = text.substring(start, end) || 'texto';
-    
+
     const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
     this.editor.value = newText;
-    
+
     this.editor.focus();
     this.editor.setSelectionRange(start + before.length, end + before.length);
     this.updatePreview();
@@ -260,11 +280,11 @@ ${clean}
     const end = this.editor.selectionEnd;
     const text = this.editor.value;
     const selectedText = text.substring(start, end) || 'texto del enlace';
-    
+
     const link = `[${selectedText}](url)`;
     const newText = text.substring(0, start) + link + text.substring(end);
     this.editor.value = newText;
-    
+
     this.editor.focus();
     const urlStart = start + selectedText.length + 3;
     this.editor.setSelectionRange(urlStart, urlStart + 3);
@@ -275,17 +295,17 @@ ${clean}
   insertHeading(level) {
     const start = this.editor.selectionStart;
     const text = this.editor.value;
-    
+
     // Find start of current line
     let lineStart = start;
     while (lineStart > 0 && text[lineStart - 1] !== '\n') {
       lineStart--;
     }
-    
+
     const prefix = '#'.repeat(level) + ' ';
     const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
     this.editor.value = newText;
-    
+
     this.editor.focus();
     this.editor.setSelectionRange(start + prefix.length, start + prefix.length);
     this.updatePreview();
@@ -295,19 +315,67 @@ ${clean}
   insertList() {
     const start = this.editor.selectionStart;
     const text = this.editor.value;
-    
+
     // Find start of current line
     let lineStart = start;
     while (lineStart > 0 && text[lineStart - 1] !== '\n') {
       lineStart--;
     }
-    
+
     const prefix = '- ';
     const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
     this.editor.value = newText;
-    
+
     this.editor.focus();
     this.editor.setSelectionRange(start + prefix.length, start + prefix.length);
+    this.updatePreview();
+    this.hasUnsavedChanges = true;
+  }
+
+  insertQuote() {
+    const start = this.editor.selectionStart;
+    const text = this.editor.value;
+
+    // Find start of current line
+    let lineStart = start;
+    while (lineStart > 0 && text[lineStart - 1] !== '\n') {
+      lineStart--;
+    }
+
+    const prefix = '> ';
+    const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+    this.editor.value = newText;
+
+    this.editor.focus();
+    this.editor.setSelectionRange(start + prefix.length, start + prefix.length);
+    this.updatePreview();
+    this.hasUnsavedChanges = true;
+  }
+
+  insertTable() {
+    const start = this.editor.selectionStart;
+    const text = this.editor.value;
+
+    const table = '\n| Columna 1 | Columna 2 |\n|-----------|-----------|\n| Celda 1   | Celda 2   |\n| Celda 3   | Celda 4   |\n';
+    const newText = text.substring(0, start) + table + text.substring(start);
+    this.editor.value = newText;
+
+    this.editor.focus();
+    this.editor.setSelectionRange(start + 3, start + 12); // Select "Columna 1"
+    this.updatePreview();
+    this.hasUnsavedChanges = true;
+  }
+
+  insertHR() {
+    const start = this.editor.selectionStart;
+    const text = this.editor.value;
+
+    const hr = '\n---\n';
+    const newText = text.substring(0, start) + hr + text.substring(start);
+    this.editor.value = newText;
+
+    this.editor.focus();
+    this.editor.setSelectionRange(start + hr.length, start + hr.length);
     this.updatePreview();
     this.hasUnsavedChanges = true;
   }
@@ -315,13 +383,13 @@ ${clean}
   // ========================================
   // Keyboard Shortcuts
   // ========================================
-  
+
   handleKeyboard(e) {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const modifier = isMac ? e.metaKey : e.ctrlKey;
 
     if (modifier) {
-      switch(e.key.toLowerCase()) {
+      switch (e.key.toLowerCase()) {
         case 's':
           e.preventDefault();
           this.saveFile();
@@ -357,17 +425,17 @@ ${clean}
   // ========================================
   // Theme Management
   // ========================================
-  
+
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('mdstudio_theme', newTheme);
-    
+
     // Update highlight.js theme
     const hlTheme = document.querySelector('link[href*="highlight.js"]');
     if (hlTheme) {
-      hlTheme.href = newTheme === 'dark' 
+      hlTheme.href = newTheme === 'dark'
         ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
         : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
     }
@@ -381,7 +449,7 @@ ${clean}
   // ========================================
   // Auto-save & Persistence
   // ========================================
-  
+
   autoSave() {
     localStorage.setItem('mdstudio_content', this.editor.value);
   }
@@ -396,11 +464,76 @@ ${clean}
   // ========================================
   // Notifications
   // ========================================
-  
+
   showNotification(message) {
     // Simple console notification for MVP
     // Could be enhanced with toast notifications later
     console.log('✓', message);
+  }
+
+  // ========================================
+  // Status Bar
+  // ========================================
+
+  updateStatusBar() {
+    const text = this.editor.value;
+
+    // Word count
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    this.wordCountEl.textContent = `${words} palabra${words !== 1 ? 's' : ''}`;
+
+    // Character count
+    const chars = text.length;
+    this.charCountEl.textContent = `${chars} caracter${chars !== 1 ? 'es' : ''}`;
+  }
+
+  updateSaveStatus() {
+    if (this.hasUnsavedChanges) {
+      this.saveStatusEl.textContent = 'Modificado';
+      this.saveStatusEl.className = 'status-item modified';
+    } else {
+      this.saveStatusEl.textContent = 'Guardado';
+      this.saveStatusEl.className = 'status-item saved';
+    }
+  }
+
+  // ========================================
+  // Settings Modal
+  // ========================================
+
+  openSettings() {
+    const modal = document.getElementById('settingsModal');
+    modal.classList.remove('hidden');
+
+    // Load current API key
+    const apiKey = localStorage.getItem('mdstudio_gemini_api_key') || '';
+    document.getElementById('geminiApiKey').value = apiKey;
+  }
+
+  closeSettings() {
+    const modal = document.getElementById('settingsModal');
+    modal.classList.add('hidden');
+  }
+
+  saveSettingsData() {
+    const apiKey = document.getElementById('geminiApiKey').value.trim();
+
+    if (apiKey) {
+      localStorage.setItem('mdstudio_gemini_api_key', apiKey);
+      this.showNotification('Configuración guardada');
+    } else {
+      localStorage.removeItem('mdstudio_gemini_api_key');
+    }
+
+    this.closeSettings();
+  }
+
+  loadSettings() {
+    // Load settings on init if needed
+    const apiKey = localStorage.getItem('mdstudio_gemini_api_key');
+    if (apiKey) {
+      console.log('✓ Gemini API Key configurada');
+    }
   }
 }
 
