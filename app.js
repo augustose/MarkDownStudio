@@ -14,7 +14,11 @@ class MarkDownStudio {
     this.charCountEl = document.getElementById('charCount');
     this.saveStatusEl = document.getElementById('saveStatus');
 
-    this.init();
+    // Focus mode
+    this.focusModeEnabled = false;
+    this.focusHighlight = null;
+
+    this.init(); \n
   }
 
   init() {
@@ -60,6 +64,22 @@ class MarkDownStudio {
       this.hasUnsavedChanges = true;
       this.updateSaveStatus();
       this.autoSave();
+      if (this.focusModeEnabled) {
+        this.updateFocusHighlight();
+      }
+    });
+
+    // Editor cursor movement for focus mode
+    this.editor.addEventListener('click', () => {
+      if (this.focusModeEnabled) {
+        this.updateFocusHighlight();
+      }
+    });
+
+    this.editor.addEventListener('keyup', () => {
+      if (this.focusModeEnabled) {
+        this.updateFocusHighlight();
+      }
     });
 
     // Synchronized scrolling
@@ -98,6 +118,9 @@ class MarkDownStudio {
     document.getElementById('helpClose').addEventListener('click', () => this.closeHelp());
     document.getElementById('helpOverlay').addEventListener('click', () => this.closeHelp());
     document.getElementById('helpOk').addEventListener('click', () => this.closeHelp());
+
+    // Focus Mode
+    document.getElementById('focusModeBtn').addEventListener('click', () => this.toggleFocusMode());
 
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
@@ -613,6 +636,69 @@ ${clean}
   closeHelp() {
     const modal = document.getElementById('helpModal');
     modal.classList.add('hidden');
+  }
+
+  // ========================================
+  // Focus Mode
+  // ========================================
+
+  toggleFocusMode() {
+    this.focusModeEnabled = !this.focusModeEnabled;
+    const btn = document.getElementById('focusModeBtn');
+    const editorPane = document.querySelector('.editor-pane');
+
+    if (this.focusModeEnabled) {
+      this.editor.classList.add('focus-mode');
+      editorPane.classList.add('focus-mode');
+      btn.classList.add('active');
+
+      // Create highlight element
+      this.focusHighlight = document.createElement('div');
+      this.focusHighlight.className = 'focus-highlight';
+      editorPane.appendChild(this.focusHighlight);
+
+      this.updateFocusHighlight();
+    } else {
+      this.editor.classList.remove('focus-mode');
+      editorPane.classList.remove('focus-mode');
+      btn.classList.remove('active');
+
+      // Remove highlight element
+      if (this.focusHighlight) {
+        this.focusHighlight.remove();
+        this.focusHighlight = null;
+      }
+    }
+  }
+
+  updateFocusHighlight() {
+    if (!this.focusHighlight) return;
+
+    const text = this.editor.value;
+    const cursorPos = this.editor.selectionStart;
+
+    // Find current line boundaries
+    let lineStart = cursorPos;
+    while (lineStart > 0 && text[lineStart - 1] !== '\n') {
+      lineStart--;
+    }
+
+    let lineEnd = cursorPos;
+    while (lineEnd < text.length && text[lineEnd] !== '\n') {
+      lineEnd++;
+    }
+
+    // Calculate line position
+    const beforeCursor = text.substring(0, lineStart);
+    const lineNumber = (beforeCursor.match(/\n/g) || []).length;
+
+    // Get line height and position
+    const lineHeight = parseInt(window.getComputedStyle(this.editor).lineHeight);
+    const top = lineNumber * lineHeight;
+
+    // Update highlight position
+    this.focusHighlight.style.top = `${top + 48}px`; // 48px for pane-header
+    this.focusHighlight.style.height = `${lineHeight}px`;
   }
 }
 
