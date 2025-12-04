@@ -41,7 +41,7 @@ Este documento describe las funcionalidades planificadas para futuras versiones 
 - [ ] **Corrector Ortográfico**: Multiidioma con sugerencias contextuales
 - [ ] **Autocompletado**: Sugerencias inteligentes mientras escribes
 - [ ] **Auto-guardado**: Guarda automáticamente el archivo cada cierto tiempo
-- [ ] **drag and drop**: recibe archivos de texto y los abre 
+- [x] **drag and drop**: recibe archivos de texto y los abre 
 
 ### Snippets y Plantillas
 - [ ] **Sistema de Snippets**: Atajos expandibles personalizables

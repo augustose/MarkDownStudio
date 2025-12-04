@@ -102,6 +102,11 @@ class MarkDownStudio {
     // File input
     document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileSelect(e));
 
+    // Drag and drop
+    this.editor.addEventListener('dragover', (e) => this.handleDragOver(e));
+    this.editor.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+    this.editor.addEventListener('drop', (e) => this.handleDrop(e));
+
     // Prevent accidental close
     window.addEventListener('beforeunload', (e) => {
       if (this.hasUnsavedChanges) {
@@ -153,12 +158,29 @@ class MarkDownStudio {
     const file = event.target.files[0];
     if (!file) return;
 
+    this.loadFile(file);
+  }
+
+  loadFile(file) {
+    // Check if file is a text/markdown file
+    const validExtensions = ['.md', '.markdown', '.txt'];
+    const fileName = file.name.toLowerCase();
+    const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!isValid) {
+      alert('Por favor, selecciona un archivo de texto (.md, .markdown, .txt)');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       this.editor.value = e.target.result;
       this.currentFile = file.name;
       this.hasUnsavedChanges = false;
       this.updatePreview();
+      this.updateStatusBar();
+      this.updateSaveStatus();
+      this.showNotification(`Archivo "${file.name}" cargado`);
     };
     reader.readAsText(file);
   }
@@ -533,6 +555,43 @@ ${clean}
     const apiKey = localStorage.getItem('mdstudio_gemini_api_key');
     if (apiKey) {
       console.log('✓ Gemini API Key configurada');
+    }
+  }
+
+  // ========================================
+  // Drag and Drop
+  // ========================================
+
+  handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.editor.style.opacity = '0.5';
+    this.editor.style.border = '2px dashed var(--accent-primary)';
+  }
+
+  handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.editor.style.opacity = '1';
+    this.editor.style.border = 'none';
+  }
+
+  handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Reset visual feedback
+    this.editor.style.opacity = '1';
+    this.editor.style.border = 'none';
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      if (this.hasUnsavedChanges) {
+        if (!confirm('¿Descartar cambios no guardados y abrir el archivo arrastrado?')) {
+          return;
+        }
+      }
+      this.loadFile(files[0]);
     }
   }
 }
