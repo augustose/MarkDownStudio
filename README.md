@@ -158,8 +158,8 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ## 📞 Contacto
 
 ¿Tienes preguntas o sugerencias? 
-- 🐛 [Reportar un bug](../../issues)
-- 💬 [Iniciar una discusión](../../discussions)
+- 🐛 [Reportar un bug](../../issues/new)
+- 💡 [Sugerir una funcionalidad](../../issues/new)
 - ⭐ [Dar una estrella](../../stargazers)
 
 ---
