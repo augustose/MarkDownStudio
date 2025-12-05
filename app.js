@@ -18,7 +18,7 @@ class MarkDownStudio {
     this.focusModeEnabled = false;
     this.focusHighlight = null;
 
-    this.init(); \n
+    this.init();
   }
 
   init() {
