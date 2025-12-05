@@ -127,7 +127,6 @@ MarkDownStudio/
 Para ver las funcionalidades planificadas para futuras versiones, consulta [ROADMAP.md](ROADMAP.md).
 
 **Próximas fases incluyen:**
-- 🎯 Modo Focus y estadísticas de escritura
 - 📁 Sistema de workspace con tags y backlinks
 - 🔄 Integración Git y sincronización cloud
 - 📤 Exportación a PDF, DOCX, ePub

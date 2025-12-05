@@ -34,7 +34,6 @@ Este documento describe las funcionalidades planificadas para futuras versiones 
 
 ### Editor Avanzado
 - [x] **barra de estado** con informacion de la cantidad de caracteres, palabras, etc. archivo guardado/modificado pendiente. 
-- [x] **Modo Focus**: Resalta solo el párrafo actual, oculta el resto
 - [ ] **Typewriter Mode**: Mantiene la línea actual centrada verticalmente
 - [ ] **Estadísticas en Vivo**: Contador de palabras, caracteres, tiempo de lectura
 - [ ] **Análisis de Legibilidad**: Nivel de complejidad del texto (Flesch-Kincaid)
